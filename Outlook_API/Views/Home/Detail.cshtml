@@ -1,0 +1,149 @@
+﻿
+@{
+    ViewBag.Title = "Detail";
+    Layout = null;
+}
+
+@*<h2>Detail</h2>
+<a href="~/home/Reply/@Url.RequestContext.RouteData.Values["id"]">Reply</a>
+
+<a onclick="Forward()">Forward</a>
+<div id="forward" style="display:none">
+    @using (Html.BeginForm("ForwardEmail", "Home"))
+    {
+        <label for="recipients">To</label>
+        <input name="recipients" type="text" class="form-control" value="" />
+
+        <input name="id" type="hidden" class="form-control" value="@Url.RequestContext.RouteData.Values["id"]" />
+
+        <button class="btn btn-default">Forward</button>
+    }
+</div>*@
+<script>
+    function Forward() {
+        $("#forward").css("display", "block");
+    }
+</script>
+
+
+<div data-ng-init="detailit()">
+    <h2 class="email-open-header">
+    
+    </h2>
+
+    <div class="inbox-info-bar">
+        <div class="row">
+            <div class="col-sm-9">
+                <!--<img src="img/avatars/5.png" alt="me" class="away">-->
+                <strong>@ViewBag.fromEName</strong>
+                <span class="hidden-mobile">&lt;@ViewBag.fromEmail &gt;to <strong>me</strong> on <i>@ViewBag.recievedTime </i></span>
+            </div>
+        
+            <div class="col-sm-3 text-right">
+
+                <div class="btn-group text-left">
+
+                    <input type="hidden" id="emaildetail_ID" value="@ViewBag.id" />
+                    <button class="btn btn-primary btn-sm replythis" onclick="goReply()">
+                        <i class="fa fa-reply"></i> Reply
+                    </button>
+                    <button class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-angle-down"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right">
+                        <li>
+                            <a onclick="goReply()" class="replythis"><i class="fa fa-reply"></i> Reply</a>
+                        </li>
+                        <li>
+                            <a onclick="goForward()" ng-click="goForward(EMailDetail)" class="replythis"><i class="fa fa-mail-forward"></i> Forward</a>
+                        </li>
+                        <li>
+                            <a onclick="CheckEmailAndDelete()" class="replythis"><i class="fa fa-trash-o"></i> Delete</a>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="inbox-message">
+        @Html.Raw(ViewBag.Body)
+    </div>
+
+    
+</div>
+<script>
+    setTimeout(function () {
+        var data = angular.element(document.getElementById('InboxID')).scope().EMailDetail;
+        alert(data);
+    }, 1000);
+
+    //$(".inbox-message").after(EMailDetail.Body.Content);
+</script>
+<script>
+
+    function goReply() {
+        debugger;
+        var id = $("#emaildetail_ID").val();
+        
+        $('#gif').css('visibility', 'visible');
+        $.ajax({
+            url: "/home/reply/?id=" + id, //you can get also action attribute from form using form.attr('action')
+            type: 'Get',
+            datatype: "html",
+            contentType: false, // Not to set any content header
+
+            //data: formData,
+        }).done(function (result) {
+
+            $("#LoadingArea").html(result);
+            $("#viewbagTitle").text("Sent");
+            $('#viewbagTitle').html('Sent');
+            $('#gif').css('visibility', 'hidden');
+        });
+    }
+
+    function goForward() {
+      
+        var id = $("#emaildetail_ID").val();
+
+        $('#gif').css('visibility', 'visible');
+        $.ajax({
+            url: "/Home/Forward/?id=" + id, //you can get also action attribute from form using form.attr('action')
+            type: 'Get',
+            datatype: "html",
+            contentType: false, // Not to set any content header
+
+            //data: formData,
+        }).done(function (result) {
+            
+            $("#LoadingArea").html(result);
+            $("#viewbagTitle").text("Forward Email");
+            $('#viewbagTitle').html('Forward Email');
+            $('#gif').css('visibility', 'hidden');
+        });
+    }
+
+    function CheckEmailAndDelete() {
+
+        var id = $("#emaildetail_ID").val();
+
+        $('#gif').css('visibility', 'visible');
+        $.ajax({
+            url: "/Mail/Delete/?id=" + id, //you can get also action attribute from form using form.attr('action')
+            type: 'Get',
+            datatype: "html",
+            contentType: false, // Not to set any content header
+
+            //data: formData,
+        }).done(function (result) {
+
+            $("#LoadingArea").html(result);
+            //$("#viewbagTitle").text("Forward Email");
+            //$('#viewbagTitle').html('Forward Email');
+            //$('#gif').css('visibility', 'hidden');
+        });
+    }
+</script>

@@ -1,0 +1,48 @@
+﻿@model IEnumerable<Microsoft.Graph.Message>
+@{
+    ViewBag.Title = "Inbox";
+    Layout = "~/Views/Shared/_Mail.cshtml";
+}
+<div id="emaillist">
+    <table class="table">
+        <tr>
+            <th>
+                Subject
+            </th>
+            <th>
+                Received
+            </th>
+            <th>
+                From
+            </th>
+            <th>
+                Detail
+            </th>
+            <th>
+                Delete
+            </th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <a href="~/home/detail?id=@item.Id">
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Subject)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReceivedDateTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.From.EmailAddress.Name) &lt;@Html.DisplayFor(modelItem => item.From.EmailAddress.Address)&gt;
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.From.EmailAddress.Name) &lt;@Html.DisplayFor(modelItem => item.From.EmailAddress.Address)&gt;
+                    </td>
+                    <td><a href="~/Home/Detail/@item.Id" target="_blank">Detail</a></td>
+                    <td><a href="~/Home/Delete/@item.Id">Delete</a></td>
+                </tr>
+            </a>
+        }
+    </table>
+</div>
+

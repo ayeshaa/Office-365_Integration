@@ -1,0 +1,74 @@
+﻿
+@{
+    ViewBag.Title = "Detail";
+    Layout = null;
+}
+
+@*<h2>Detail</h2>
+    <a href="~/home/Reply/@Url.RequestContext.RouteData.Values["id"]">Reply</a>
+
+    <a onclick="Forward()">Forward</a>
+    <div id="forward" style="display:none">
+        @using (Html.BeginForm("ForwardEmail", "Home"))
+        {
+            <label for="recipients">To</label>
+            <input name="recipients" type="text" class="form-control" value="" />
+
+            <input name="id" type="hidden" class="form-control" value="@Url.RequestContext.RouteData.Values["id"]" />
+
+            <button class="btn btn-default">Forward</button>
+        }
+    </div>*@
+<script>
+    function Forward() {
+        $("#forward").css("display", "block");
+    }
+</script>
+
+
+<div data-ng-init="detailit()">
+    <h2 class="email-open-header"></h2>
+
+    <div class="inbox-info-bar">
+        <div class="row">
+            <div class="col-sm-9">
+                <!--<img src="img/avatars/5.png" alt="me" class="away">-->
+                <strong>@ViewBag.fromEName</strong>
+                <span class="hidden-mobile">&lt;@ViewBag.fromEmail &gt;to <strong>me</strong> on <i>@ViewBag.recievedTime </i></span>
+            </div>
+
+            <div class="col-sm-3 text-right">
+
+                <div class="btn-group text-left">
+
+                    <input type="hidden" id="emaildetail_ID" value="@ViewBag.id" />
+                    @*<button class="btn btn-primary btn-sm replythis" onclick="goReply()">
+                        <i class="fa fa-reply"></i> Reply
+                    </button>
+                    <button class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-angle-down"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right">
+                        <li>
+                            <a onclick="goReply()" class="replythis"><i class="fa fa-reply"></i> Reply</a>
+                        </li>
+                        <li>
+                            <a onclick="goForward()" ng-click="goForward(EMailDetail)" class="replythis"><i class="fa fa-mail-forward"></i> Forward</a>
+                        </li>
+                        <li>
+                            <a onclick="CheckEmailAndDelete()" class="replythis"><i class="fa fa-trash-o"></i> Delete</a>
+                        </li>
+
+                    </ul>*@
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="inbox-message">
+        @Html.Raw(ViewBag.Body)
+    </div>
+
+
+</div>

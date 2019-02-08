@@ -1,0 +1,212 @@
+﻿
+@{
+    ViewBag.Title = "_Mail";
+    Layout = "~/Views/Shared/_LayoutSmart.cshtml";
+}
+<div class="inbox-nav-bar no-content-padding" id="InboxID" ng-controller="InboxController">
+
+    <h1 class="page-title txt-color-blueDark hidden-tablet">
+        <i class="fa fa-fw fa-inbox"></i> <b id="viewbagTitle"></b>
+    </h1>
+
+    <div class="btn-group hidden-desktop visible-tablet">
+        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            Inbox <i class="fa fa-caret-down"></i>
+        </button>
+        <ul class="dropdown-menu pull-left">
+            <li>
+                <a href="showstudents" class="inbox-load">Inbox <i class="fa fa-check"></i></a>
+            </li>
+            <li>
+                <a href="javascript:void(0);">Sent</a>
+            </li>
+            <li>
+                <a href="javascript:void(0);">Trash</a>
+            </li>
+            <li class="divider"></li>
+            <li>
+                <a href="javascript:void(0);">Spam</a>
+            </li>
+        </ul>
+
+    </div>
+
+    <style>
+        .invisble {
+            display: none;
+        }
+    </style>
+    <span ng-class="{'invisble' : pageTitle == 'Detail'|| pageTitle == 'Reply' || pageTitle=='Forward' , }">
+        <div class="inbox-checkbox-triggered">
+
+            <div class="btn-group">
+                <a id="btnDelete" title="DELETE"  class="deletebutton btn btn-default">
+                    <strong>
+                        <i class="fa fa-trash-o fa-lg"></i>
+                    </strong>
+                </a>
+            </div>
+            <div class="btn-group">
+                <a onclick="Test()" class="deletebutton btn btn-default"><i class="fa fa-refresh"></i></a>
+            </div>
+
+            <div class="btn-group">
+                <a onclick="EmailReply()"  id="btnReply" class="deletebutton btn btn-default" title="Reply">
+                    <img src="~/Content/Images/ReplyEmail.png" />
+                </a>
+            </div>
+
+            <div class="btn-group">
+                <a onclick="EmailFarward()" id="btnFarward" class="deletebutton btn btn-default" title="Farward">
+                    <img src="~/Content/Images/FarwardEmail.png" />
+                </a>
+            </div>
+
+
+        </div>
+
+        <a href="javascript:void(0);" id="compose-mail-mini" class="btn btn-primary pull-right hidden-desktop visible-tablet"> <strong><i class="fa fa-file fa-lg"></i></strong> </a>
+
+        <div class="btn-group pull-right inbox-paging">
+            <a href="javascript:void(0);" class="btn btn-default btn-sm"><strong><i class="fa fa-chevron-left"></i></strong></a>
+            <a href="javascript:void(0);" class="btn btn-default btn-sm"><strong><i class="fa fa-chevron-right"></i></strong></a>
+        </div>
+        @*<span class="pull-right"><strong>1-30</strong> of <strong>3,452</strong></span>*@
+    </span>
+</div>
+
+<div id="inbox-content" class="inbox-body no-content-padding" style="min-height:900px">
+
+    <div class="inbox-side-bar">
+
+        <a href="javascript:void();" onclick="Compose()" id="compose-mail" class="btn btn-primary btn-block"> <strong>Compose</strong> </a>
+
+        @*<h6> Folder <a href="javascript:void(0);" rel="tooltip" title="" data-placement="right" data-original-title="Refresh" class="pull-right txt-color-darken"><i class="fa fa-refresh"></i></a></h6>*@
+
+        <ul class="nav">
+
+            <li class="active"><a id="clickInbox" onclick="Test()">Inbox</a></li>
+            <li><a id="clickSent" onclick="Sent()">Sent</a></li>
+            <li><a id="clickSent" onclick="Draft()">Draft</a></li>
+            <li><a id="clickSent" onclick="Trash()">Trash</a></li>
+
+        </ul>
+   
+    </div>
+
+
+
+    <div class="table-wrap custom-scroll animated fast fadeInRight">
+        <!-- ajax will fill this area -->
+        @RenderBody()
+
+    </div>
+
+
+
+</div>
+
+<style>
+    ul.nav a {
+        cursor: pointer;
+    }
+</style>
+
+<script>
+
+
+    $(function () {
+        $('ul.nav li').on('click', function () {
+            alert("Menu Changed");
+            $(this).parent().find('li.active').removeClass('active');
+            $(this).addClass('active');
+        });
+    });
+    
+    function Test() {
+        $('#gif').css('visibility', 'visible');
+        $.ajax({
+            url: "/Home/Inbox", //you can get also action attribute from form using form.attr('action')
+            type: 'Get',
+            datatype: "html",
+            contentType: false, // Not to set any content header
+
+            //data: formData,
+        }).done(function (result) {
+
+            $("#LoadingArea").html(result);
+            $("#viewbagTitle").text("Inbox");
+            $('#viewbagTitle').html('Inbox');
+            $('#gif').css('visibility', 'hidden');
+        });
+    }
+    function Sent() {
+        $('#gif').css('visibility', 'visible');
+        $.ajax({
+            url: "/Mail/Sent", //you can get also action attribute from form using form.attr('action')
+            type: 'Get',
+            datatype: "html",
+            contentType: false, // Not to set any content header
+
+            //data: formData,
+        }).done(function (result) {
+
+            $("#LoadingArea").html(result);
+            $("#viewbagTitle").text("Sent");
+            $('#viewbagTitle').html('Sent');
+            $('#gif').css('visibility', 'hidden');
+        });
+    }
+    function Draft() {
+        $('#gif').css('visibility', 'visible');
+        $.ajax({
+            url: "/Mail/Draft", //you can get also action attribute from form using form.attr('action')
+            type: 'Get',
+            datatype: "html",
+            contentType: false, // Not to set any content header
+
+            //data: formData,
+        }).done(function (result) {
+
+            $("#LoadingArea").html(result);
+            $('#viewbagTitle').html('Draft');
+            $('#gif').css('visibility', 'hidden');
+        });
+    }
+
+    function Trash() {
+        $('#gif').css('visibility', 'visible');
+        $.ajax({
+            url: "/Mail/Trash", //you can get also action attribute from form using form.attr('action')
+            type: 'Get',
+            datatype: "html",
+            contentType: false, // Not to set any content header
+
+            //data: formData,
+        }).done(function (result) {
+
+            $("#LoadingArea").html(result);
+            $('#viewbagTitle').html('Trash');
+            $('#gif').css('visibility', 'hidden');
+        });
+    }
+    function Compose() {
+        debugger;
+        $('#gif').css('visibility', 'visible');
+        $.ajax({
+            url: "/Home/Compose", //you can get also action attribute from form using form.attr('action')
+            type: 'Get',
+            datatype: "html",
+            contentType: false, // Not to set any content header
+
+            //data: formData,
+        }).done(function (result) {
+
+            $("#LoadingArea").html(result);
+            $('#viewbagTitle').html('Compose');
+            $('#gif').css('visibility', 'hidden');
+        });
+    }
+
+
+</script>

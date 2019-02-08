@@ -1,0 +1,185 @@
+﻿
+@{
+    ViewBag.Title = "ComposeDraft";
+    Layout = null;
+}
+
+
+<h2 class="email-open-header">
+    Compose New Email
+</h2>
+
+<form onsubmit="SendEmail()" class="form-horizontal" id="email-compose-form">
+    <input type="hidden" name="EmailBody" value="" id="EmailBody" />
+    <input type="hidden" name="testbody" value="" id="testbody" />
+
+    <div class="inbox-info-bar no-padding">
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-md-1"><strong>To</strong></label>
+                <div class="col-md-11">
+
+                    <div class="col-md-10">
+                        <input class="form-control" name="EmailTo" id="EmailTo"  placeholder="" type="text">
+                    </div>
+
+                    <div class="col-md-1">
+                        <input type="button" class="form-control" id="btnCC" style="color:skyblue;" value="Cc" />
+                    </div>
+                    <div class="col-md-1">
+                        <input type="button" class="form-control" id="btnBCC" style="color:skyblue;" value="Bcc" />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inbox-info-bar no-padding hide" id="divCC">
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-md-1"><strong>CC</strong></label>
+                <div class="col-md-11">
+                    <input class="form-control" name="EmailCC" id="EmailCC" placeholder="" type="text">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inbox-info-bar no-padding hide" id="divBCC">
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-md-1"><strong>BCC</strong></label>
+                <div class="col-md-11">
+                    <input class="form-control" name="EmailBCC" id="EmailBCC"  placeholder="" type="text">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inbox-info-bar no-padding">
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-md-1"><strong>Subject</strong></label>
+                <div class="col-md-11">
+                    <input class="form-control" name="EmailSubject" id="EmailSubject" placeholder="Email Subject" type="text" value="@ViewBag.subject">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inbox-message no-padding">
+
+        <div id="emailBody" name="emailBody">
+            @Html.Raw(ViewBag.Message)
+        </div>
+    </div>
+
+    <div class="inbox-compose-footer">
+
+        <div class="col-sm-12">
+            <p style="color:red">@Html.Raw(ViewBag.Message)</p>
+        </div>
+
+        <button style="margin-top: 15px;" onclick="SendEmail()" data-loading-text="&lt;i class='fa fa-refresh fa-spin'&gt;&lt;/i&gt; &nbsp; Sending..." class="btn btn-primary pull-right" type="button" id="send">
+            Send <i class="fa fa-arrow-circle-right fa-lg"></i>
+        </button>
+
+    </div>
+
+</form>
+
+<script>
+    $('#emailBody').summernote({
+
+        height: 250,
+        focus: false,
+        tabsize: 2
+    });
+
+
+
+</script>
+
+<script>
+    function SendEmail()
+    {
+        debugger;
+        var textareaValue = $('#emailBody').summernote('code');
+        $("#EmailBody").val(textareaValue);
+
+        $('<input />').attr('type', 'hidden')
+            .attr('EmailBody', textareaValue)
+            .appendTo('#email-compose-form');
+        var form = $('#email-compose-form');
+            //var fileUpload = $("#files").get(0);
+            //var file = $("#files").get(0).files;
+        var data = $("#email-compose-form").get(0);
+            var formData = new FormData(data);
+            var email = $("#Email").val();
+
+            //for (var i = 0; i < file.length; i++) {
+            //    formData.append("files", file[i]);
+            //}
+            //formData.append("model", JSON.stringify(data));
+
+            $('#gif').css('visibility', 'visible');
+            $.ajax({
+                url: "/Mail/SendEmail", //you can get also action attribute from form using form.attr('action')
+                type: 'POST',
+                datatype: "html",
+                contentType: false, // Not to set any content header
+                processData: false,
+                data: formData,
+            }).done(function (result) {
+                Test();
+                if (result.includes("validation-summary-errors")) {
+                    $('#gif').css('visibility', 'hidden');
+                    $("#errorsValidation").html(result);
+                    $("#errorsValidation").attr("tabindex", -1).focus();
+                    //$("#errorsValidation").scrollIntoView();
+                    $("#errorsValidation").animate({ scrollTop: 0 }, "slow");
+                }
+                else {
+                    $("#msform").html(result);
+                    $("html, body").animate({ scrollTop: 0 }, "slow");
+                }
+                //alert(results.values.Errors);
+                $('#gif').css('visibility', 'hidden');
+            });
+    }
+
+    $("#btnCC").mouseover(function () {
+        $(this).css("background-color", "skyblue");
+        $(this).css("color", "black");
+    });
+
+    $("#btnCC").mouseout(function () {
+        $(this).css("background-color", "white");
+        $(this).css("color", "skyblue");
+    });
+
+    $("#btnCC").click(function () {
+        $("#divCC").removeClass("hide");
+        $("#EmailCC").focus();
+        $(this).hide();
+    });
+
+
+    $("#btnBCC").mouseover(function () {
+        $(this).css("background-color", "skyblue");
+        $(this).css("color", "black");
+    });
+
+    $("#btnBCC").mouseout(function () {
+        $(this).css("background-color", "white");
+        $(this).css("color", "skyblue");
+    });
+    $("#btnBCC").click(function () {
+        $("#divBCC").removeClass("hide");
+        $("#EmailBCC").focus();
+        $(this).hide();
+    });
+
+
+</script>

@@ -1,0 +1,290 @@
+﻿@* Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE.txt in the project root for license information.*@
+@model IEnumerable<Microsoft.Graph.Message>
+
+@using PagedList.Mvc;
+
+
+@{
+    ViewBag.Title = "Inbox";
+    Layout = null;
+}
+
+@*Original*@
+
+<h2></h2>
+
+<table id="inbox-table" class="table table-condensed">
+    <tbody>
+        @{
+            var count = 0;
+        }
+        @foreach (var item in Model)
+        {
+            @*<a href="javascript:OpenDeatil(@item.Id)" id="detail" onclick="javascript: alert('hah')">*@
+        count = count + 1;
+        var id = item.Id;
+        <tr id="msg1" class="unread" data-ng-repeat="email in EMails">
+
+            <td class="inbox-table-icon">
+                <div class="checkbox" id="emailCheckbox">
+                    <label>
+                        <input type="hidden" value="@item.Id" id="@count" />
+                        <input type="hidden" id="mailid" value=" @Html.DisplayFor(modelItem => item.From.EmailAddress.Name)" />
+                        <input type="checkbox" value="@item.Id" class="checkbox style-2">
+                        <span></span>
+                    </label>
+                </div>
+            </td>
+            <td onclick="OpenDetail(@count);" class="inbox-data-from hidden-xs hidden-sm" ng-click="getdetail(email.id)">
+                <div>
+                    @Html.DisplayFor(modelItem => item.From.EmailAddress.Name)
+
+                </div>
+            </td>
+
+            @if (item.HasAttachments == true)
+            {
+                <td class="inbox-data-message">
+                    <div>
+                        <img src="~/Content/Images/mail_attachment.png" />
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td class="inbox-data-message"></td>
+            }
+
+
+            <td onclick="OpenDetail(@count);" class="inbox-data-message">
+                <div>
+                    @Html.DisplayFor(modelItem => item.Subject)
+                </div>
+            </td>
+            <td onclick="OpenDetail(@count);" class="inbox-data-date hidden-xs">
+                <div>
+                    @{ var date = item.ReceivedDateTime.Value.Date.ToString("dd-MM-yyyy"); }
+                    @Html.DisplayFor(modelItem => date)
+                </div>
+            </td>
+        </tr>
+        @*</a>*@
+                        }
+    </tbody>
+</table>
+
+@*<div id='Paging' style="text-align: center">
+    @Html.PagedListPager(Model, page => Url.Action("Inbox", new { page }))
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+</div>*@
+
+@*Alert Warning*@
+<div class="modal fade" id="myWarning" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+    <div class="modal-dialog custom-class">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">
+                    <strong>Warning</strong>
+                </h4>
+            </div>
+            <div class="modal-body">
+                Please select email first.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Confirmation*@
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+    <div class="modal-dialog custom-class">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">
+                    <strong>Delete Emails</strong>
+                </h4>
+            </div>
+            <div class="modal-body">
+                Do you really want to delete selected emails?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" id="btnDeleteEmails" class="btn btn-primary">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-content {
+        -webkit-box-shadow: 0 5px 15px rgba(0,0,0,0);
+        -moz-box-shadow: 0 5px 15px rgba(0,0,0,0);
+        -o-box-shadow: 0 5px 15px rgba(0,0,0,0);
+        box-shadow: 0 5px 15px rgba(0,0,0,0);
+    }
+
+    tr:hover td {
+        background-color: #000;
+        color: white;
+    }
+
+    .yellow {
+        background-color: yellow;
+    }
+</style>
+
+<script src="~/Scripts/MyScripts/Inox.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#btnReply').hide();
+        $('#btnFarward').hide();
+    });
+
+    $("#btnDelete").on("click", function () {
+        $('#gif').css('visibility', 'visible');
+
+        var checkedEmailsCount = $('#emailCheckbox input:checked').length
+        console.log("Total Selected Emails : " + checkedEmailsCount);
+
+        if (checkedEmailsCount == 0) {
+            $("#myWarning").modal('show');
+        }
+        else {
+            $("#myModal").modal('show');
+        }
+    });
+
+    $('#btnDeleteEmails').on('click', function () {
+        var checkedEmails = [];
+        $('#emailCheckbox input:checked').each(function () {
+            console.log($(this).attr("value"));
+            checkedEmails.push($(this).attr("value"));
+        });
+
+        console.log("Total Selected Emails : " + checkedEmails.length);
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("DeleteSelectedEmails", "Home")',
+            dataType: "html",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ checkedEmails: checkedEmails }),
+            success: function (data) {
+                $("#myModal").modal('hide');
+
+                debugger;
+
+                if (data == "true") {
+                    debugger;
+                    console.log("Selected emails are deleted.");
+
+                    RefreshInbox();
+                }
+            },
+            error: function(data) {
+                $("#myModal").modal('hide');
+                console.log("Error : " + data);
+            }
+        });
+    });
+
+
+    $('.checkbox').on('change', function () {
+         var   checkedEmailsCount = $('#emailCheckbox input:checked').length
+        console.log("Total Selected Emails : " + checkedEmailsCount);
+
+        if (checkedEmailsCount == 1) {
+            $('#btnReply').show();
+            $('#btnFarward').show();
+        }
+        else {
+            $('#btnReply').hide();
+            $('#btnFarward').hide();
+        }
+    })
+
+    
+    function RefreshInbox() {
+        $.ajax({
+                            type: "POST",
+                            url: '@Url.Action("Inbox", "Home")',
+                            dataType: "html",
+                            success: function (data) {
+                                $("#myModal").modal('hide');
+                                console.log("Emails are refreshed after deletion.");
+
+                                $("#LoadingArea").html(data);
+                                $("#viewbagTitle").text("Sent");
+                                $('#viewbagTitle').html('Sent');
+                            },
+                            error: function(data) {
+                                console.log("Error in refreshing emails after deletion.");
+                            }
+        });
+    }
+
+    function EmailReply() {
+        debugger;
+        alert('EmailReply');
+        var id = "";
+
+        $('#emailCheckbox input:checked').each(function () {
+            console.log($(this).attr("value"));
+            id = $(this).attr("value");
+        });
+
+        console.log("Email Reply Id : " + id);
+        $('#gif').css('visibility', 'visible');
+
+       $.ajax({
+            type: "POST",
+            url: '@Url.Action("Reply", "Home")',
+            dataType: "html",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ id: id }),
+            success: function (data) {
+                $("#LoadingArea").html(data);
+                $("#viewbagTitle").text("Sent");
+                $('#viewbagTitle').html('Sent');
+                $('#gif').css('visibility', 'hidden');
+            }
+        });
+    }
+
+    function EmailFarward() {
+        alert('EmailFarward');
+        var id = "";
+
+        $('#emailCheckbox input:checked').each(function () {
+            console.log($(this).attr("value"));
+            id = $(this).attr("value");
+        });
+
+        console.log("Email Farward Id : " + id);
+        $('#gif').css('visibility', 'visible');
+
+       $.ajax({
+            type: "POST",
+            url: '@Url.Action("Forward", "Home")',
+            dataType: "html",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ id: id }),
+            success: function (data) {
+                $("#LoadingArea").html(data);
+                $("#viewbagTitle").text("Sent");
+                $('#viewbagTitle').html('Sent');
+                $('#gif').css('visibility', 'hidden');
+            }
+        });
+    }
+
+    $("#inbox-table input[type='checkbox']").change(function () {
+        $(this).closest('tr').toggleClass("highlight", this.checked);
+    });
+
+</script>

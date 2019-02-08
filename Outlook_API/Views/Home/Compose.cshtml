@@ -1,0 +1,296 @@
+﻿
+@{
+    ViewBag.Title = "Compose";
+    Layout = null;
+}
+
+@*<h2>Compose</h2>
+@using (Html.BeginForm("SendEmail", "Home"))
+{
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="recipients">To</label>
+            <input name="recipients" type="text" class="form-control" value="" @(ViewBag.Email == null ? "disabled" : null) />
+        </div>
+        <div class="form-group">
+            <label for="subject">Add a subject</label>
+            <input name="subject" type="text" class="form-control" value="" @(ViewBag.Email == null ? "disabled" : null) />
+        </div>
+        <div class="form-group">
+            <label for="body">Body</label>
+            <textarea rows="4" cols="50" name="body" @(ViewBag.Email == null ? "disabled" : null)>
+</textarea>
+            @*<input name="body" type="text" class="form-control" value="" @(ViewBag.Email == null ? "disabled" : null) />*/@
+        </div>
+        <div class="form-group">
+            <button class="btn btn-default" @(ViewBag.Email == null ? "disabled" : null)>Send</button>
+            <input name="email-address" value=@ViewBag.Email type="hidden" />
+        </div>
+    </div>
+}
+<div class="col-sm-12">
+    <p style="color:red" class="@(ViewBag.Message == null ? "hidden" : null)">@Html.Raw(ViewBag.Message)</p>
+</div>*@
+
+
+<h2 class="email-open-header">
+    Compose New Email
+
+    <!--<a href="javascript:void(0);" rel="tooltip" data-placement="left" data-original-title="Print" class="txt-color-darken pull-right"><i class="fa fa-print"></i></a>-->
+
+</h2>
+
+<form onsubmit="SendEmail()" class="form-horizontal" id="email-compose-form">
+    <input type="hidden" name="EmailBody" value="" id="EmailBody" />
+    <input type="hidden" name="testbody" value="" id="testbody" />
+    
+    <div class="inbox-info-bar no-padding">
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-md-1"><strong>To</strong></label>
+                <div class="col-md-11">
+                
+                    <div class="col-md-10">
+                        <input class="form-control" name="EmailTo" id="EmailTo" @(ViewBag.Email == null ? "disabled" : null) ng-required="true" ng-model="recipient" placeholder="" type="text">
+                    </div>
+
+                    <div class="col-md-1">
+                        <input type="button" class="form-control" id="btnCC" style="color:skyblue;" value="Cc" />
+                    </div>
+                    <div class="col-md-1">
+                        <input type="button" class="form-control" id="btnBCC" style="color:skyblue;" value="Bcc" />
+                    </div>
+
+                    <!--<select multiple style="width:100%" class="select2" data-select-search="true">
+                        <option value="sunny.orlaf@smartadmin.com">sadi.orlaf@smartadmin.com</option>
+                        <option value="rachael.hawi@smartadmin.com">rachael.hawi@smartadmin.com</option>
+                        <option value="michael.safiel@smartadmin.com">michael.safiel@smartadmin.com</option>
+                        <option value="alex.jones@infowars.com">alex.jones@infowars.com</option>
+                        <option value="oruf.matalla@gmail.com">oruf.matalla@gmail.com</option>
+                        <option value="hr@smartadmin.com">hr@smartadmin.com</option>
+                        <option value="IT@smartadmin.com" selected="selected">IT@smartadmin.com</option>
+                    </select>-->
+                    <!--<em><a href="javascript:void(0);" class="show-next" rel="tooltip" data-placement="bottom" data-original-title="Carbon Copy">CC</a></em>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inbox-info-bar no-padding hide" id="divCC">
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-md-1"><strong>CC</strong></label>
+                <div class="col-md-11">
+                    <input class="form-control" name="EmailCC" id="EmailCC" @(ViewBag.Email == null ? "disabled" : null) ng-required="true" ng-model="recipient" placeholder="" type="text">
+                    <!--<select multiple style="width:100%" class="select2" data-select-search="true">
+                        <option value="sunny.orlaf@smartadmin.com" selected="selected">sunny.orlaf@smartadmin.com</option>
+                        <option value="rachael.hawi@smartadmin.com" selected="selected">rachael.hawi@smartadmin.com</option>
+                        <option value="michael.safiel@smartadmin.com">michael.safiel@smartadmin.com</option>
+                        <option value="alex.jones@infowars.com">alex.jones@infowars.com</option>
+                        <option value="oruf.matalla@gmail.com">oruf.matalla@gmail.com</option>
+                        <option value="hr@smartadmin.com">hr@smartadmin.com</option>
+                        <option value="IT@smartadmin.com">IT@smartadmin.com</option>
+                    </select>-->
+                    <em>@*<a href="javascript:void(0);" class="show-next" rel="tooltip" data-placement="bottom" data-original-title="Blind Carbon Copy">BCC</a>*@</em>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inbox-info-bar no-padding hide" id="divBCC">
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-md-1"><strong>BCC</strong></label>
+                <div class="col-md-11">
+                    <input class="form-control" name="EmailBCC" id="EmailBCC" @(ViewBag.Email == null ? "disabled" : null) ng-required="true" ng-model="recipient" placeholder="" type="text">
+                    <!--<select multiple style="width:100%" class="select2" data-select-search="true">
+                        <option value="sunny.orlaf@smartadmin.com">sunny.orlaf@smartadmin.com</option>
+                        <option value="rachael.hawi@smartadmin.com">rachael.hawi@smartadmin.com</option>
+                        <option value="michael.safiel@smartadmin.com">michael.safiel@smartadmin.com</option>
+                        <option value="alex.jones@infowars.com">alex.jones@infowars.com</option>
+                        <option value="oruf.matalla@gmail.com">oruf.matalla@gmail.com</option>
+                        <option value="hr@smartadmin.com">hr@smartadmin.com</option>
+                        <option value="IT@smartadmin.com">IT@smartadmin.com</option>
+                    </select>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inbox-info-bar no-padding">
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-md-1"><strong>Subject</strong></label>
+                <div class="col-md-11">
+                    <input class="form-control" name="EmailSubject" id="EmailSubject" @(ViewBag.Email == null ? "disabled" : null) ng-model="subject" placeholder="Email Subject" type="text">
+                    <!--<em><a href="javascript:void(0);" class="show-next" rel="tooltip" data-placement="bottom" data-original-title="Attachments"><i class="fa fa-paperclip fa-lg"></i></a></em>-->
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<div class="inbox-info-bar no-padding hidden">
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-md-1"><strong>Attachments</strong></label>
+                <div class="col-md-11">
+                    <input class="form-control fileinput" type="file" multiple="multiple">
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+
+    <div class="inbox-message no-padding">
+
+        <div id="emailBody" name="emailBody" @(ViewBag.Email == null ? "disabled" : null)>
+
+        </div>
+    </div>
+
+    <div class="inbox-compose-footer">
+
+        <!--<button class="btn btn-danger" type="button">
+            Disregard
+        </button>
+
+        <button class="btn btn-info" type="button">
+            Draft
+        </button>-->
+        <div class="col-sm-12">
+            <p style="color:red" class="@(ViewBag.Message == null ? "hidden" : null)">@Html.Raw(ViewBag.Message)</p>
+        </div>
+
+
+
+        <button style="margin-top: 15px;" onclick="SendEmail()" data-loading-text="&lt;i class='fa fa-refresh fa-spin'&gt;&lt;/i&gt; &nbsp; Sending..." class="btn btn-primary pull-right" type="button" id="send">
+            Send <i class="fa fa-arrow-circle-right fa-lg"></i>
+        </button>
+
+
+    </div>
+
+</form>
+
+<!--<div class="email-infobox">
+
+    <div class="well well-sm well-light">
+        <h5>Related Invoice</h5>
+        <ul class="list-unstyled">
+            <li>
+                <i class="fa fa-file fa-fw text-success"></i><a href="javascript:void(0);"> #4831 - Paid</a>
+            </li>
+            <li>
+                <i class="fa fa-file fa-fw text-danger"></i><a href="javascript:void(0);"><strong> #4835 - Unpaid</strong></a>
+            </li>
+        </ul>
+
+
+    </div>
+
+   
+    </div>
+
+    <ul class="list-inline">
+        <li><img src="img/avatars/5.png" alt="me" width="30px"></li>
+        <li><img src="img/avatars/3.png" alt="me" width="30px"></li>
+        <li><img src="img/avatars/sunny.png" alt="me" width="30px"></li>
+        <li><a href="javascript:void(0);">1 more</a></li>
+    </ul>
+
+</div>-->
+<script>
+    $('#emailBody').summernote({
+
+        height: 250,
+        focus: false,
+        tabsize: 2
+    });
+
+
+
+</script>
+
+<script>
+    function SendEmail() 
+    {
+        debugger;
+        var textareaValue = $('#emailBody').summernote('code');
+        $("#EmailBody").val(textareaValue);
+        
+        $('<input />').attr('type', 'hidden')
+            .attr('EmailBody', textareaValue)
+            .appendTo('#email-compose-form');
+        var form = $('#email-compose-form');
+            //var fileUpload = $("#files").get(0);
+            //var file = $("#files").get(0).files;
+        var data = $("#email-compose-form").get(0);
+            var formData = new FormData(data);
+            var email = $("#Email").val();
+
+            //for (var i = 0; i < file.length; i++) {
+            //    formData.append("files", file[i]);
+            //}
+            //formData.append("model", JSON.stringify(data));
+
+            $('#gif').css('visibility', 'visible');
+            $.ajax({
+                url: "/Mail/SendEmail", //you can get also action attribute from form using form.attr('action')
+                type: 'POST',
+                datatype: "html",
+                contentType: false, // Not to set any content header
+                processData: false,
+                data: formData,
+            }).done(function (result) {
+                Test();
+                if (result.includes("validation-summary-errors")) {
+                    $('#gif').css('visibility', 'hidden');
+                    $("#errorsValidation").html(result);
+                    $("#errorsValidation").attr("tabindex", -1).focus();
+                    //$("#errorsValidation").scrollIntoView();
+                    $("#errorsValidation").animate({ scrollTop: 0 }, "slow");
+                }
+                else {
+                    $("#msform").html(result);
+                    $("html, body").animate({ scrollTop: 0 }, "slow");
+                }
+                //alert(results.values.Errors);
+                $('#gif').css('visibility', 'hidden');
+            });
+    }
+
+    $("#btnCC").mouseover(function () {
+        $(this).css("background-color", "skyblue");
+        $(this).css("color", "black");
+    });
+
+    $("#btnCC").mouseout(function () {
+        $(this).css("background-color", "white");
+        $(this).css("color", "skyblue");
+    });
+
+    $("#btnCC").click(function () {
+        $("#divCC").removeClass("hide");
+        $("#EmailCC").focus();
+        $(this).hide();
+    });
+
+
+    $("#btnBCC").mouseover(function () {
+        $(this).css("background-color", "skyblue");
+        $(this).css("color", "black");
+    });
+
+    $("#btnBCC").mouseout(function () {
+        $(this).css("background-color", "white");
+        $(this).css("color", "skyblue");
+    });
+    $("#btnBCC").click(function () {
+        $("#divBCC").removeClass("hide");
+        $("#EmailBCC").focus();
+        $(this).hide();
+    });
+
+
+</script>
